@@ -29,11 +29,11 @@ export default new Router({
     {
       path: '/search',
       component: Search
-    },
-    {
-      path: '/tab',
-      component: Tab
     }
+    // {
+    //   path: '/tab',
+    //   component: Tab
+    // }
 
   ]
 })
