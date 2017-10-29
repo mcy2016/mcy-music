@@ -1,38 +1,55 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div v-if="recommends.length" class="slider-wrapper">
-        <slider>
-          <div v-for="item in recommends">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" alt="">
-            </a>
-          </div>
-        </slider>
+    <scroll ref="scroll" class="recommend-content" :data="discLists">
+      <div>
+        <div v-if="recommends.length" class="slider-wrapper">
+          <slider>
+            <div v-for="item in recommends">
+              <a :href="item.linkUrl">
+                <img class="needsclick" @load="loadImg" :src="item.picUrl" alt="">
+              </a>
+            </div>
+          </slider>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">推荐歌单</h1>
+          <ul>
+            <li v-for="item in discLists" class="item">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.imgurl">
+              </div>
+              <div class="text">
+                <h1 class="name">{{item.dissname}}</h1>
+                <p class="desc">{{item.creator.name}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="recommend-list">
-        <h1 class="list-title"></h1>
-        <ul>
-
-        </ul>
+      <div class="loading-container" v-show="!discLists.length">
+        <loading title='我正在飞入···'></loading>
       </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Slider from 'base/slider/slider'
-  import { getRecomment } from 'api/recommend'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+  import { getRecomment, getDiscList } from 'api/recommend'
   import { ERR_OK } from 'api/config'
 
   export default {
     data () {
       return {
-        recommends: []
+        recommends: [],
+        discLists: []
       }
     },
     created () {
       this._getRecommend()
+      this._getDiscList()
     },
     methods: {
       _getRecommend () {
@@ -41,10 +58,26 @@
             this.recommends = res.data.slider
           }
         })
+      },
+      _getDiscList () {
+        getDiscList().then((res) => {
+          if (res.code === ERR_OK) {
+            this.discLists = res.data.list
+//            console.log(this.discLists)
+          }
+        })
+      },
+      loadImg () {
+        if (!this.imgloaded) {
+          this.imgLoaded = true
+          this.$refs.scroll.refresh()
+        }
       }
     },
     components: {
-      Slider
+      Slider,
+      Scroll,
+      Loading
     }
   }
 </script>

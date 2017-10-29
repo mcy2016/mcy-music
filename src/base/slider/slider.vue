@@ -43,6 +43,7 @@
           this._play()
         }
       }, 20)
+//      监听屏幕尺寸改变
       window.addEventListener('resize', () => {
         if (!this.slider) {
           return
